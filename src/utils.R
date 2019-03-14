@@ -4,6 +4,7 @@ ufn_clean_weight = function(w){
 }
 
 ufn_scrape_perc = function(url, exchange="nse"){
+  cat(sprintf("Pulling %s data from: %s", exchange, url), "\n")
   x = xml2::read_html(url)
   xpath = ifelse(exchange=="nse", '//*[@id="n_changetext"]', '//*[@id="b_changetext"]')
   txt = rvest::html_node(x=x, xpath=xpath) %>%

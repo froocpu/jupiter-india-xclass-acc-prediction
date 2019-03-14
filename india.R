@@ -4,26 +4,24 @@ library(httr)
 library(jsonlite)
 
 # Set up script. ----------------------------------------------------------
-source("src/functions.R")
+source("src/utils.R")
+source("src/tables.R")
+
+# Parse command line args. ------------------------------------------------
 exchange = commandArgs()[length(commandArgs())]
 
 if (!(exchange %in% c("bse","nse"))){
   exchange = "bse"
 }
-cat(sprintf("Using exchange: %s", exchange))
+cat(sprintf("Using exchange: %s", exchange), "\n")
 
-# Get table. ---------------------------------------------------------------
+# Get tables. --------------------------------------------------------------
 jup_url = "https://www.hl.co.uk/funds/fund-discounts,-prices--and--factsheets/search-results/j/jupiter-india-class-x-accumulation"
+jup_equities_url = "https://www.hl.co.uk/funds/fund-discounts,-prices--and--factsheets/search-results/j/jupiter-india-class-x-accumulation/fund-analysis"
 
-jupiter_top_holdings = xml2::read_html(jup_url) %>%
-  rvest::html_node(xpath = '//*[@id="top-holdings"]/table[1]') %>%
-  rvest::html_table()
-
-names(jupiter_top_holdings) = c("Security", "Weight_raw")
-
-# Clean table. -------------------------------------------------------------
-jupiter_top_holdings$Weight = ufn_clean_weight(jupiter_top_holdings$Weight_raw)
-
+jupiter_top_holdings = ufn_get_holdings_table(jup_url)
+jupiter_equities = ufn_get_equities_table(jup_equities_url)
+  
 # Get percentage changes. --------------------------------------------------
 urls = list(
   hindustan = ufn_parse_url("refineries/hindustanpetroleumcorporation/HPC"),
@@ -39,23 +37,24 @@ urls = list(
 )
 
 # Calculate scores and append the index. ----------------------------------
-jupiter_top_holdings$todays_perc_change <- sapply(urls, function(i){
-  ufn_scrape_perc(i, )})
+jupiter_top_holdings$todays_perc_change <- sapply(urls, function(url){
+  return(ufn_scrape_perc(url, exchange))
+})
 
 index_row = data.frame(
-  Security = "BSE30",
-  Weight_raw = NA,
-  Weight = 100-sum(jupiter_top_holdings$Weight),
+  security = "BSE30",
+  weight = 100-sum(jupiter_top_holdings$weight),
   todays_perc_change = ufn_get_perc_change_bse30()
 )
 
 jupiter_top_holdings = rbind(jupiter_top_holdings, index_row)
 
 # Calculate weighted average. ----------------------------------------------
-prediction = sum(jupiter_top_holdings$Weight * jupiter_top_holdings$todays_perc_change)/nrow(jupiter_top_holdings)
-print(sprintf("Today's Jupiter India Index prediction: %s percent change.", round(prediction, 3)))
+prediction = sum(jupiter_top_holdings$weight * jupiter_top_holdings$todays_perc_change)/nrow(jupiter_top_holdings)
+cat("\n", sprintf("Today's Jupiter India Index prediction: %s percent change.", 
+              round(prediction, 3)), "\n")
 
-# View the table. ----------------------------------------------------------
+# View the tables. ---------------------------------------------------------
 print(jupiter_top_holdings)
 
 
