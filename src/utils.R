@@ -21,6 +21,15 @@ ufn_get_perc_change_bse30 = function(){
   return(as.numeric(val))
 }
 
+ufn_get_perc_change_bse100 = function(){
+  url = "http://www.asiaindex.co.in/indices/equity/sp-bse-100"
+  xpath = '//*[@id="main-content"]/div[3]/div[2]/div/ul/li[1]/div[2]/div[2]/div[1]/div[3]'
+  val = xml2::read_html(url) %>%
+    html_node(xpath=xpath) %>%
+    html_text()
+  return(ufn_clean_weight(gsub("▼", "", val)))
+}
+
 ufn_parse_url = function(endpoint){
   return(sprintf("https://www.moneycontrol.com/india/stockpricequote/%s", endpoint))
 }
