@@ -44,13 +44,13 @@ jupiter_top_holdings$todays_perc_change <- sapply(urls, function(url){
 index_row = data.frame(
   security = "BSE30",
   weight = 100-sum(jupiter_top_holdings$weight),
-  todays_perc_change = ufn_get_perc_change_bse100()
+  todays_perc_change = ufn_get_perc_change_bse30()
 )
 
 jupiter_top_holdings = rbind(jupiter_top_holdings, index_row)
 
 # Calculate weighted average. ----------------------------------------------
-prediction = sum(jupiter_top_holdings$weight * jupiter_top_holdings$todays_perc_change)/nrow(jupiter_top_holdings)
+prediction = weighted.mean(jupiter_top_holdings$todays_perc_change, jupiter_top_holdings$weight)
 cat("\n", sprintf("Today's Jupiter India Index prediction: %s percent change.", 
               round(prediction, 3)), "\n")
 
