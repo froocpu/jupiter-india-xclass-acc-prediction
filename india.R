@@ -6,6 +6,7 @@ library(jsonlite)
 # Set up script. ----------------------------------------------------------
 source("src/utils.R")
 source("src/tables.R")
+write_out_prediction = TRUE
 
 # Parse command line args. ------------------------------------------------
 exchange = commandArgs()[length(commandArgs())]
@@ -56,5 +57,37 @@ cat("\n", sprintf("Today's Jupiter India Index prediction: %s percent change.",
 
 # View the tables. ---------------------------------------------------------
 print(jupiter_top_holdings)
+
+# Write a prediction. -----------------------------------------------------
+predictions_fn = "data/predictions.csv"
+today = as.character(Sys.Date())
+
+predictions = if(file.exists(predictions_fn)){
+  predictions = read.csv(predictions_fn)
+} else {
+  predictions = data.frame(predicted_date=c(), 
+                           predicted_perc_change=c(),
+                           using_exchange=c(),
+                           actual_perc_change=c(),
+                           actual_date=c())
+}
+actual = ufn_get_actual_change()
+if(actual$ts %in% predictions$actual_date || today %in% predictions$predicted_date) {
+  stop(sprintf("Prediction already in %s", predictions_fn))
+} else {
+
+  this_row = data.frame(
+    predicted_date=today, 
+    predicted_perc_change=prediction,
+    using_exchange=exchange,
+    actual_perc_change=actual$val,
+    actual_date=actual$ts
+  )
+  
+  write.csv(rbind(prediction, this_row), 
+            predictions_fn,
+            row.names = FALSE)
+}
+
 
 
