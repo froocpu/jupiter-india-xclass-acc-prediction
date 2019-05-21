@@ -54,8 +54,6 @@ Rscript india.R "bse"
 
 ## TODO
 - [ ] Incorporate a dynamic way of querying a specific website based on ticker codes, rather than hard-coded URLs.
-- [x] Use BSE100 instead of BSE30.
 - [ ] Find an appropriate API instead of scraping.
 - [ ] Incorporate other pieces of data from the HL website into the final prediction calculation (number of holdings, cash holdings, etc.)
-- [x] Devise a better way of storing the results of multiple calls.
-- [ ] Make script more configurable.
+- [x] Make script more configurable.

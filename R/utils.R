@@ -25,23 +25,8 @@ ufn_get_perc_change_bse30 = function(){
   return(as.numeric(val))
 }
 
-ufn_get_perc_change_bse100 = function(){
-  url = "http://www.asiaindex.co.in/indices/equity/sp-bse-100"
-  xpath = '//*[@id="main-content"]/div[3]/div[2]/div/ul/li[1]/div[2]/div[2]/div[1]/div[3]'
-  val = xml2::read_html(url) %>%
-    html_node(xpath=xpath) %>%
-    html_text()
-  return(ufn_clean_weight(gsub("▼", "", val)))
-}
-
 ufn_parse_url = function(endpoint){
   return(sprintf("https://www.moneycontrol.com/india/stockpricequote/%s", endpoint))
-}
-
-ufn_check_times = function(){
-  ny = strftime(Sys.time(), usetz=TRUE, tz="Etc/GMT+4")
-  bomb = strftime(Sys.time(), usetz=TRUE, tz="Etc/GMT-5:30")
-  ny_hr = as.integer(substring(ny, 12, 13))
 }
 
 ufn_get_actual_change = function(){
@@ -63,4 +48,8 @@ ufn_get_actual_change = function(){
     ts = ts,
     val = val
   ))
+}
+
+ufn_cat = function(msg, input){
+  cat("\n", sprintf(msg, input), "\n")
 }
