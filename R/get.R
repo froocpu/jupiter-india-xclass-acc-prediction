@@ -10,7 +10,7 @@ ufn_extract_brackets = function(x){
 ufn_scrape_perc = function(url, exchange="nse"){
   cat(sprintf("Pulling %s data from: %s", exchange, url), "\n")
   x = xml2::read_html(url)
-  xpath = ifelse(exchange=="nse", '//*[@id="n_changetext"]', '//*[@id="b_changetext"]')
+  xpath = ifelse(exchange=="nse", '//*[@id="n_changetext"]', '//*[@id="div_bse_livebox_wrap"]/div[1]/div[1]/div/div[2]/span[3]/em')
   txt = rvest::html_node(x=x, xpath=xpath) %>%
     rvest::html_text()
   extract_val = ufn_extract_brackets(txt)

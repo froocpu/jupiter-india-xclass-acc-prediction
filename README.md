@@ -34,7 +34,7 @@ Rscript india.R
 Or run with an input parameter of "bse" or "nse" to specify the exchange to get prices from:
 
 ```sh
-Rscript india.R "bse"
+Rscript ticker.R "bse"
 ```
 
 ### Output	
